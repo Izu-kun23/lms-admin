@@ -26,6 +26,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Ensure we're on the client side
+        if (typeof window === "undefined") {
+          setIsLoading(false)
+          return
+        }
+        
         // Try to get user info from stored token
         const token = localStorage.getItem("accessToken")
         if (token) {
@@ -38,7 +44,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (error) {
         console.error("Auth check failed:", error)
-        apiClient.clearTokens()
+        if (typeof window !== "undefined") {
+          apiClient.clearTokens()
+        }
         setIsLoading(false)
       }
     }
@@ -63,12 +71,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (credentials: LoginRequest) => {
     try {
+      console.log("Attempting login...", credentials.email)
       const response = await apiClient.login(credentials)
+      
+      if (!response || !response.user) {
+        throw new Error("Invalid login response: missing user data")
+      }
+      
+      console.log("Login successful, user:", response.user)
       setUser(response.user)
-      router.push(getRedirectPath(response.user))
+      
+      const redirectPath = getRedirectPath(response.user)
+      console.log("Redirecting to:", redirectPath)
+      
+      // Use replace instead of push to avoid adding to history
+      router.replace(redirectPath)
+      
+      // Small delay to ensure state is updated before navigation
+      await new Promise(resolve => setTimeout(resolve, 50))
     } catch (error: any) {
-      console.error("Login failed:", error)
-      throw new Error(error.response?.data?.message || "Login failed. Please check your credentials.")
+      console.error("Login failed in context:", error)
+      
+      // Ensure tokens are cleared on error
+      apiClient.clearTokens()
+      setUser(null)
+      
+      const errorMessage = error.message || 
+                          error.response?.data?.message || 
+                          error.response?.data?.error ||
+                          "Login failed. Please check your credentials."
+      throw new Error(errorMessage)
     }
   }, [router, getRedirectPath])
 

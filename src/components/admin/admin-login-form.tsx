@@ -18,14 +18,7 @@ export function AdminLoginForm({
 }: React.ComponentProps<"form">) {
   const [error, setError] = React.useState<string>("")
   const [isSubmitting, setIsSubmitting] = React.useState(false)
-  const [organizations, setOrganizations] = React.useState<Array<{ id: string; name: string; slug: string }>>([])
   const { login } = useAuth()
-
-  // Load organizations from localStorage on mount
-  React.useEffect(() => {
-    const orgs = JSON.parse(localStorage.getItem("organizations") || "[]")
-    setOrganizations(orgs)
-  }, [])
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -36,16 +29,21 @@ export function AdminLoginForm({
       const formData = new FormData(event.currentTarget)
       const email = formData.get("email") as string
       const password = formData.get("password") as string
-      const organizationId = formData.get("organizationId") as string
 
-      if (!organizationId) {
-        setError("Please select an organization")
+      if (!email || !password) {
+        setError("Please enter both email and password")
         setIsSubmitting(false)
         return
       }
 
-      await login({ email, password, organizationId })
+      console.log("Submitting login form...")
+      await login({ email, password })
+      
+      // If login succeeds, navigation will happen automatically
+      // Don't reset isSubmitting here as the component will unmount on navigation
+      console.log("Login successful, should navigate soon...")
     } catch (err: any) {
+      console.error("Login form error:", err)
       setError(err.message || "Login failed. Please try again.")
       setIsSubmitting(false)
     }
@@ -61,28 +59,14 @@ export function AdminLoginForm({
           </p>
         </div>
         <Field>
-          <FieldLabel htmlFor="organizationId">Organization</FieldLabel>
-          <select
-            id="organizationId"
-            name="organizationId"
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            required
-          >
-            <option value="">Select an organization</option>
-            {organizations.map((org) => (
-              <option key={org.id} value={org.id}>
-                {org.name}
-              </option>
-            ))}
-          </select>
-          {organizations.length === 0 && (
-            <FieldDescription className="text-amber-600">
-              No organizations found.{" "}
-              <a href="/onboarding" className="underline underline-offset-4 font-medium">
-                Create one here
-              </a>
-            </FieldDescription>
-          )}
+          <FieldDescription className="mb-4">
+            <a 
+              href="/onboarding" 
+              className="text-sm text-primary underline underline-offset-4 hover:text-primary/80 font-medium"
+            >
+              Create a new organization
+            </a>
+          </FieldDescription>
         </Field>
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -119,15 +103,11 @@ export function AdminLoginForm({
           >
             {isSubmitting ? "Signing in..." : "Login as Admin"}
           </Button>
-        </Field>
-        <FieldSeparator>Or</FieldSeparator>
-        <Field>
-          <FieldDescription className="text-center">
-            Student or instructor?{" "}
-            <a href="/login" className="underline underline-offset-4">
-              Login here
-            </a>
-          </FieldDescription>
+          {isSubmitting && (
+            <FieldDescription className="text-center mt-2 text-sm text-muted-foreground">
+              This may take up to 60 seconds if the server is starting up (cold start)...
+            </FieldDescription>
+          )}
         </Field>
       </FieldGroup>
     </form>

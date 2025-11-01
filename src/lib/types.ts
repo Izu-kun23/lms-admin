@@ -51,7 +51,6 @@ export interface Enrollment {
 export interface LoginRequest {
   email: string
   password: string
-  organizationId: string
 }
 
 export interface LoginResponse {

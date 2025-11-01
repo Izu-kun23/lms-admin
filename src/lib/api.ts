@@ -8,6 +8,7 @@ import type {
   UpdateOrganizationRequest,
   Organization,
   User,
+  Course,
   GlobalStats,
   SystemHealth,
   ApiResponse,
@@ -27,7 +28,7 @@ class ApiClient {
       headers: {
         "Content-Type": "application/json",
       },
-      timeout: 30000, // 30 seconds
+      timeout: 60000, // 60 seconds - increased for Render.com cold starts
     })
 
     this.setupInterceptors()
@@ -134,10 +135,67 @@ class ApiClient {
 
   // Authentication
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await this.client.post<LoginResponse>("/auth/login/select-organization", credentials)
-    const { accessToken, refreshToken } = response.data
-    this.setTokens(accessToken, refreshToken)
-    return response.data
+    try {
+      // Login endpoint - only requires email and password
+      // Increased timeout specifically for login to handle cold starts
+      const response = await this.client.post<LoginResponse>(
+        "/auth/login",
+        {
+          email: credentials.email,
+          password: credentials.password,
+        },
+        {
+          timeout: 60000, // 60 seconds for cold start scenarios
+        }
+      )
+      
+      // Handle both possible response structures
+      const data = response.data as any
+      const accessToken = data.accessToken || data.token
+      const refreshToken = data.refreshToken || data.refresh
+      
+      if (!accessToken || !refreshToken) {
+        throw new Error("Invalid response from server: missing tokens")
+      }
+      
+      if (!data.user) {
+        throw new Error("Invalid response from server: missing user data")
+      }
+      
+      this.setTokens(accessToken, refreshToken)
+      return {
+        accessToken,
+        refreshToken,
+        user: data.user
+      }
+    } catch (error: any) {
+      console.error("Login API error:", error)
+      
+      // Handle timeout specifically
+      if (error.code === "ECONNABORTED" || error.message?.includes("timeout")) {
+        throw new Error(
+          "Request timed out. The server may be starting up (cold start). " +
+          "Please try again in a few moments. This usually takes 30-60 seconds on the first request."
+        )
+      }
+      
+      if (error.response) {
+        // Server responded with error status
+        const errorMessage = error.response.data?.message || 
+                            error.response.data?.error || 
+                            "Login failed"
+        throw new Error(errorMessage)
+      } else if (error.request) {
+        // Request made but no response
+        throw new Error(
+          "Unable to reach the server. Please check your internet connection and try again. " +
+          "If this is the first request, the server may be starting up (cold start)."
+        )
+      } else {
+        // Error in setting up request
+        throw new Error(error.message || "Login failed")
+      }
+    }
   }
 
   async register(data: RegisterRequest): Promise<RegisterResponse> {
@@ -219,6 +277,29 @@ class ApiClient {
     return response.data
   }
 
+  async createUser(data: {
+    email: string
+    password: string
+    firstName: string
+    lastName: string
+    role: string
+    organizationId?: string
+    matricNumber?: string
+  }): Promise<User> {
+    const response = await this.client.post<User>("/admin/users", data)
+    return response.data
+  }
+
+  async updateUser(id: string, data: {
+    firstName?: string
+    lastName?: string
+    email?: string
+    matricNumber?: string
+  }): Promise<User> {
+    const response = await this.client.put<User>(`/admin/users/${id}`, data)
+    return response.data
+  }
+
   async updateUserRole(id: string, role: string): Promise<User> {
     const response = await this.client.put<User>(`/admin/users/${id}/role`, { role })
     return response.data
@@ -228,9 +309,29 @@ class ApiClient {
     await this.client.delete(`/admin/users/${id}`)
   }
 
+  async getEnrollments(organizationId?: string): Promise<any[]> {
+    const url = organizationId ? `/admin/enrollments?organizationId=${organizationId}` : "/admin/enrollments"
+    const response = await this.client.get<any[]>(url)
+    return response.data
+  }
+
+  async getEnrollment(id: string): Promise<any> {
+    const response = await this.client.get(`/admin/enrollments/${id}`)
+    return response.data
+  }
+
   async createEnrollment(userId: string, courseId: string): Promise<any> {
     const response = await this.client.post("/admin/enrollments", { userId, courseId })
     return response.data
+  }
+
+  async updateEnrollment(id: string, data: { status?: string }): Promise<any> {
+    const response = await this.client.put(`/admin/enrollments/${id}`, data)
+    return response.data
+  }
+
+  async deleteEnrollment(id: string): Promise<void> {
+    await this.client.delete(`/admin/enrollments/${id}`)
   }
 
   // Courses
