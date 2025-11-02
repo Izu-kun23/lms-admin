@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import * as SheetPrimitive from "@radix-ui/react-dialog"
-import { XIcon } from "lucide-react"
+import { Icon } from "@iconify/react"
+const XIcon = (props: any) => <Icon icon="bx:x" {...props} />
 
 import { cn } from "@/lib/utils"
 

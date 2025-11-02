@@ -6,12 +6,41 @@ import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api"
 import { OrganizationCard } from "@/components/super-admin/organization-card"
 import { Button } from "@/components/ui/button"
-import { Plus, Search } from "lucide-react"
+import { Icon } from "@iconify/react"
+const Plus = (props: any) => <Icon icon="bx:plus" {...props} />
+const Search = (props: any) => <Icon icon="bx:search" {...props} />
 
 export default function OrganizationsPage() {
+  // API call commented out - using mock data
   const { data: organizations = [], isLoading, error } = useQuery({
     queryKey: ["organizations"],
-    queryFn: () => apiClient.getOrganizations(),
+    // queryFn: () => apiClient.getOrganizations(),
+    queryFn: async () => {
+      return [
+        {
+          id: "org1",
+          name: "University of Technology",
+          slug: "university-of-tech",
+          domain: "university.edu",
+          description: "A leading technology university",
+          settings: {},
+          isActive: true,
+          createdAt: "2024-01-20T10:00:00Z",
+          updatedAt: "2024-01-20T10:00:00Z",
+        },
+        {
+          id: "org2",
+          name: "Tech Institute",
+          slug: "tech-institute",
+          domain: "techinstitute.edu",
+          description: "Premier technical education",
+          settings: {},
+          isActive: true,
+          createdAt: "2024-01-15T10:00:00Z",
+          updatedAt: "2024-01-15T10:00:00Z",
+        },
+      ]
+    },
   })
 
   const [searchQuery, setSearchQuery] = React.useState("")

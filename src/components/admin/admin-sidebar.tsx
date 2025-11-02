@@ -1,17 +1,19 @@
 "use client"
 
 import * as React from "react"
-import {
-  IconDashboard,
-  IconUsers,
-  IconBook,
-  IconChartBar,
-  IconSettings,
-  IconHelp,
-  IconSearch,
-  IconSchool,
-  IconMessageCircle,
-} from "@tabler/icons-react"
+import { Icon } from "@iconify/react"
+
+// Icon components using Boxicons (rounded, thin weight) - using bx prefix for regular Boxicons
+const IconDashboard = (props: any) => <Icon icon="bx:grid-alt" width="16" height="16" {...props} />
+const IconUsers = (props: any) => <Icon icon="bx:group" width="16" height="16" {...props} />
+const IconBook = (props: any) => <Icon icon="bx:book" width="16" height="16" {...props} />
+const IconChartBar = (props: any) => <Icon icon="bx:bar-chart-alt-2" width="16" height="16" {...props} />
+const IconSettings = (props: any) => <Icon icon="bx:cog" width="16" height="16" {...props} />
+const IconHelp = (props: any) => <Icon icon="bx:help-circle" width="16" height="16" {...props} />
+const IconSearch = (props: any) => <Icon icon="bx:search" width="16" height="16" {...props} />
+const IconSchool = (props: any) => <Icon icon="bx:user-plus" width="16" height="16" {...props} />
+const IconMessageCircle = (props: any) => <Icon icon="bx:message-rounded-dots" width="16" height="16" {...props} />
+const IconBuilding = (props: any) => <Icon icon="bx:building" width="16" height="16" {...props} />
 
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
@@ -32,36 +34,60 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
   const { user, logout } = useAuth()
   const router = useRouter()
 
-  const navMain = [
+  const navSections = [
     {
-      title: "Dashboard",
-      url: "/admin",
-      icon: IconDashboard,
+      items: [
+        {
+          title: "Dashboard",
+          url: "/admin",
+          icon: IconDashboard,
+        },
+      ],
     },
     {
-      title: "Users",
-      url: "/admin/users",
-      icon: IconUsers,
+      label: "Management",
+      items: [
+        {
+          title: "Organizations",
+          url: "/admin/organizations",
+          icon: IconBuilding,
+        },
+        {
+          title: "Users",
+          url: "/admin/users",
+          icon: IconUsers,
+        },
+        {
+          title: "Courses",
+          url: "/admin/courses",
+          icon: IconBook,
+        },
+        {
+          title: "Enrollments",
+          url: "/admin/enrollments",
+          icon: IconSchool,
+        },
+      ],
     },
     {
-      title: "Courses",
-      url: "/admin/courses",
-      icon: IconBook,
+      label: "Insights",
+      items: [
+        {
+          title: "Analytics",
+          url: "/admin/analytics",
+          icon: IconChartBar,
+        },
+      ],
     },
     {
-      title: "Enrollments",
-      url: "/admin/enrollments",
-      icon: IconSchool,
-    },
-    {
-      title: "Analytics",
-      url: "/admin/analytics",
-      icon: IconChartBar,
-    },
-    {
-      title: "Support",
-      url: "/admin/support",
-      icon: IconMessageCircle,
+      label: "Support",
+      items: [
+        {
+          title: "Support",
+          url: "/admin/support",
+          icon: IconMessageCircle,
+        },
+      ],
     },
   ]
 
@@ -98,7 +124,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <a href="/admin">
                 <span className="font-bebas text-2xl leading-none tracking-wide">GLACQ</span>
@@ -109,7 +135,7 @@ export function AdminSidebar({ ...props }: React.ComponentProps<typeof Sidebar>)
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navMain} />
+        <NavMain sections={navSections} />
         <NavSecondary items={navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

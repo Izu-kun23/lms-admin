@@ -5,15 +5,16 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
-import {
-  LayoutDashboard,
-  Building2,
-  Users,
-  BookOpen,
-  Settings,
-  Activity,
-  BarChart3,
-} from "lucide-react"
+import { Icon } from "@iconify/react"
+
+// Icon components using Boxicons (rounded, thin weight)
+const LayoutDashboard = (props: any) => <Icon icon="bx:grid-alt" {...props} />
+const Building2 = (props: any) => <Icon icon="bx:building" {...props} />
+const Users = (props: any) => <Icon icon="bx:group" {...props} />
+const BookOpen = (props: any) => <Icon icon="bx:book" {...props} />
+const Settings = (props: any) => <Icon icon="bx:cog" {...props} />
+const Activity = (props: any) => <Icon icon="bx:activity" {...props} />
+const BarChart3 = (props: any) => <Icon icon="bx:bar-chart-alt-2" {...props} />
 
 const navItems = [
   {
@@ -73,7 +74,7 @@ export function SuperAdminSidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition-colors",
                 isActive
                   ? "bg-accent text-accent-foreground"
                   : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -116,7 +117,7 @@ function UserMenu() {
       </div>
       <button
         onClick={handleLogout}
-        className="ml-auto rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+        className="ml-auto rounded-full px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
       >
         Logout
       </button>

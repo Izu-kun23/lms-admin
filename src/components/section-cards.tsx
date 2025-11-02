@@ -1,4 +1,6 @@
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
+import { Icon } from "@iconify/react"
+const IconTrendingDown = (props: any) => <Icon icon="bx:down-arrow" {...props} />
+const IconTrendingUp = (props: any) => <Icon icon="bx:up-arrow" {...props} />
 
 import { Badge } from "@/components/ui/badge"
 import {

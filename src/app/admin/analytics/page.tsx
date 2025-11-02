@@ -28,22 +28,87 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { BarChart3, Users, BookOpen, TrendingUp, Activity } from "lucide-react"
+import { Icon } from "@iconify/react"
+const BarChart3 = (props: any) => <Icon icon="bx:bar-chart-alt-2" {...props} />
+const Users = (props: any) => <Icon icon="bx:group" {...props} />
+const BookOpen = (props: any) => <Icon icon="bx:book" {...props} />
+const TrendingUp = (props: any) => <Icon icon="bx:up-arrow" {...props} />
+const Activity = (props: any) => <Icon icon="bx:activity" {...props} />
 
 export default function AdminAnalyticsPage() {
+  // API calls commented out - using mock data
   const { data: userStats, isLoading: userStatsLoading } = useQuery({
     queryKey: ["admin-user-stats"],
-    queryFn: () => apiClient.getUserStats(),
+    // queryFn: () => apiClient.getUserStats(),
+    queryFn: async () => {
+      return [
+        {
+          id: "user1",
+          firstName: "John",
+          lastName: "Doe",
+          email: "john@example.com",
+          role: "STUDENT",
+          lastActiveAt: "2024-01-20T14:30:00Z",
+          totalCourses: 3,
+          completedCourses: 1,
+          totalMessages: 15,
+          totalQuizAttempts: 8,
+          averageQuizScore: 85.5,
+        },
+      ]
+    },
   })
 
   const { data: courseStats, isLoading: courseStatsLoading } = useQuery({
     queryKey: ["admin-course-stats"],
-    queryFn: () => apiClient.getCourseStats(),
+    // queryFn: () => apiClient.getCourseStats(),
+    queryFn: async () => {
+      return [
+        {
+          courseId: "course1",
+          courseTitle: "Introduction to Computer Science",
+          totalEnrollments: 45,
+          activeEnrollments: 42,
+          completedEnrollments: 38,
+          averageProgress: 78.5,
+          averageGrade: 82.3,
+          instructorRating: 4.7,
+        },
+      ]
+    },
   })
 
   const { data: health, isLoading: healthLoading } = useQuery({
     queryKey: ["health"],
-    queryFn: () => apiClient.getHealth(),
+    // queryFn: () => apiClient.getHealth(),
+    queryFn: async () => {
+      return {
+        status: "healthy",
+        timestamp: new Date().toISOString(),
+        uptime: 99.9,
+        activeUsers: 1250,
+        databaseStatus: "connected",
+        storageUsage: "75%",
+        performance: {
+          uptime: 99.9,
+          responseTime: 150,
+          throughput: 1000,
+          errorRate: 0.1,
+        },
+        resources: {
+          cpu: "45%",
+          memory: "60%",
+          storage: "75%",
+          network: "30%",
+        },
+        services: {
+          api: "healthy",
+          database: "healthy",
+          websocket: "healthy",
+          storage: "healthy",
+        },
+      }
+    },
   })
 
   // Calculate role distribution

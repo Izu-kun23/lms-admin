@@ -6,6 +6,7 @@ import { SuperAdminChart } from "@/components/super-admin/super-admin-chart"
 import { SuperAdminDataTable } from "@/components/super-admin/super-admin-data-table"
 import { SuperAdminHeader } from "@/components/super-admin/super-admin-header"
 import { SystemHealthWidget } from "@/components/super-admin/system-health"
+import { SuperAdminRecentCourses } from "@/components/super-admin/recent-courses"
 import {
   SidebarInset,
   SidebarProvider,
@@ -14,10 +15,35 @@ import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api"
 
 export default function SuperAdminDashboard() {
+  // API call commented out - using mock data
   const { data: health, isLoading: healthLoading } = useQuery({
     queryKey: ["system-health"],
-    queryFn: () => apiClient.getHealth(),
-    refetchInterval: 30000, // Refetch every 30 seconds
+    // queryFn: () => apiClient.getHealth(),
+    queryFn: async () => {
+      return {
+        status: "healthy",
+        timestamp: new Date().toISOString(),
+        performance: {
+          uptime: 99.9,
+          responseTime: 150,
+          throughput: 1000,
+          errorRate: 0.1,
+        },
+        resources: {
+          cpu: "45%",
+          memory: "60%",
+          storage: "75%",
+          network: "30%",
+        },
+        services: {
+          api: "healthy",
+          database: "healthy",
+          websocket: "healthy",
+          storage: "healthy",
+        },
+      }
+    },
+    // refetchInterval: 30000, // Refetch every 30 seconds
   })
 
   return (
@@ -36,6 +62,7 @@ export default function SuperAdminDashboard() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
               <SuperAdminSectionCards />
+              <SuperAdminRecentCourses />
               <div className="grid gap-4 px-4 md:grid-cols-2 lg:px-6">
                 <div className="px-0">
                   <SuperAdminChart />

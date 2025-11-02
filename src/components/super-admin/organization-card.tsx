@@ -2,8 +2,14 @@
 
 import React from "react"
 import Link from "next/link"
-import { Building2, Users, CheckCircle2, XCircle } from "lucide-react"
+import { Icon } from "@iconify/react"
 import type { Organization } from "@/lib/types"
+
+// Icon components using Boxicons (rounded, thin weight)
+const Building2 = (props: any) => <Icon icon="bx:building" {...props} />
+const Users = (props: any) => <Icon icon="bx:group" {...props} />
+const CheckCircle2 = (props: any) => <Icon icon="bx:check-circle" {...props} />
+const XCircle = (props: any) => <Icon icon="bx:x-circle" {...props} />
 
 interface OrganizationCardProps {
   organization: Organization

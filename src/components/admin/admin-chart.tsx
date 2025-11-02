@@ -47,14 +47,21 @@ export function AdminChart() {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("90d")
 
+  // API calls commented out - using mock data
   const { data: userStats } = useQuery({
     queryKey: ["admin-user-stats"],
-    queryFn: () => apiClient.getUserStats(),
+    // queryFn: () => apiClient.getUserStats(),
+    queryFn: async () => {
+      return [{ id: "user1", totalCourses: 3, completedCourses: 1 }]
+    },
   })
 
   const { data: courseStats } = useQuery({
     queryKey: ["admin-course-stats"],
-    queryFn: () => apiClient.getCourseStats(),
+    // queryFn: () => apiClient.getCourseStats(),
+    queryFn: async () => {
+      return [{ courseId: "course1", totalEnrollments: 45, activeEnrollments: 42 }]
+    },
   })
 
   React.useEffect(() => {

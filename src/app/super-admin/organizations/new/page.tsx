@@ -12,9 +12,23 @@ export default function NewOrganizationPage() {
   const queryClient = useQueryClient()
 
   const createMutation = useMutation({
-    mutationFn: (data: CreateOrganizationRequest) => apiClient.createOrganization(data),
+    mutationFn: async (data: CreateOrganizationRequest) => {
+      // API call commented out - simulating success
+      // return apiClient.createOrganization(data)
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            id: `org-${Date.now()}`,
+            ...data,
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          })
+        }, 500)
+      })
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["organizations"] })
+      // queryClient.invalidateQueries({ queryKey: ["organizations"] })
       router.push("/super-admin/organizations")
     },
   })

@@ -2,13 +2,12 @@
 
 import React from "react"
 import { cn } from "@/lib/utils"
-import { LucideIcon } from "lucide-react"
 
 interface StatsCardProps {
   title: string
   value: string | number
   description?: string
-  icon: LucideIcon
+  icon: React.ComponentType<any>
   trend?: {
     value: number
     label: string

@@ -51,9 +51,17 @@ export function SuperAdminChart() {
   const isMobile = useIsMobile()
   const [timeRange, setTimeRange] = React.useState("90d")
 
+  // API call commented out - using mock data
   const { data: stats } = useQuery({
     queryKey: ["global-stats"],
-    queryFn: () => apiClient.getGlobalStats(),
+    // queryFn: () => apiClient.getGlobalStats(),
+    queryFn: async () => {
+      return {
+        organizations: { totalOrganizations: 15 },
+        users: { totalUsers: 25000 },
+        courses: { totalCourses: 500 },
+      }
+    },
   })
 
   React.useEffect(() => {

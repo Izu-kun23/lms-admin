@@ -1,17 +1,18 @@
 "use client"
 
 import * as React from "react"
-import {
-  IconDashboard,
-  IconUsers,
-  IconBook,
-  IconChartBar,
-  IconSettings,
-  IconHelp,
-  IconSearch,
-  IconActivity,
-  IconBuilding,
-} from "@tabler/icons-react"
+import { Icon } from "@iconify/react"
+
+// Icon components using Boxicons (rounded, thin weight)
+const IconDashboard = (props: any) => <Icon icon="bx:grid-alt" width="16" height="16" {...props} />
+const IconUsers = (props: any) => <Icon icon="bx:group" width="16" height="16" {...props} />
+const IconBook = (props: any) => <Icon icon="bx:book" width="16" height="16" {...props} />
+const IconChartBar = (props: any) => <Icon icon="bx:bar-chart-alt-2" width="16" height="16" {...props} />
+const IconSettings = (props: any) => <Icon icon="bx:cog" width="16" height="16" {...props} />
+const IconHelp = (props: any) => <Icon icon="bx:help-circle" width="16" height="16" {...props} />
+const IconSearch = (props: any) => <Icon icon="bx:search" width="16" height="16" {...props} />
+const IconActivity = (props: any) => <Icon icon="bx:activity" width="16" height="16" {...props} />
+const IconBuilding = (props: any) => <Icon icon="bx:building" width="16" height="16" {...props} />
 
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
@@ -30,36 +31,50 @@ import { useAuth } from "@/hooks/useAuth"
 export function SuperAdminSidebarNew({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth()
 
-  const navMain = [
+  const navSections = [
     {
-      title: "Dashboard",
-      url: "/super-admin",
-      icon: IconDashboard,
+      items: [
+        {
+          title: "Dashboard",
+          url: "/super-admin",
+          icon: IconDashboard,
+        },
+      ],
     },
     {
-      title: "Organizations",
-      url: "/super-admin/organizations",
-      icon: IconBuilding,
+      label: "Management",
+      items: [
+        {
+          title: "Organizations",
+          url: "/super-admin/organizations",
+          icon: IconBuilding,
+        },
+        {
+          title: "Users",
+          url: "/super-admin/users",
+          icon: IconUsers,
+        },
+        {
+          title: "Courses",
+          url: "/super-admin/courses",
+          icon: IconBook,
+        },
+      ],
     },
     {
-      title: "Users",
-      url: "/super-admin/users",
-      icon: IconUsers,
-    },
-    {
-      title: "Courses",
-      url: "/super-admin/courses",
-      icon: IconBook,
-    },
-    {
-      title: "Analytics",
-      url: "/super-admin/analytics",
-      icon: IconChartBar,
-    },
-    {
-      title: "Monitoring",
-      url: "/super-admin/monitoring",
-      icon: IconActivity,
+      label: "System",
+      items: [
+        {
+          title: "Analytics",
+          url: "/super-admin/analytics",
+          icon: IconChartBar,
+        },
+        {
+          title: "Monitoring",
+          url: "/super-admin/monitoring",
+          icon: IconActivity,
+        },
+      ],
     },
   ]
 
@@ -96,7 +111,7 @@ export function SuperAdminSidebarNew({ ...props }: React.ComponentProps<typeof S
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <a href="/super-admin">
                 <span className="font-bebas text-2xl leading-none tracking-wide">GLACQ</span>
@@ -107,7 +122,7 @@ export function SuperAdminSidebarNew({ ...props }: React.ComponentProps<typeof S
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={navMain} />
+        <NavMain sections={navSections} />
         <NavSecondary items={navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

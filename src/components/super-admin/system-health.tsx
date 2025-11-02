@@ -1,8 +1,13 @@
 "use client"
 
 import React from "react"
-import { CheckCircle2, XCircle, AlertCircle } from "lucide-react"
+import { Icon } from "@iconify/react"
 import type { SystemHealth } from "@/lib/types"
+
+// Icon components using Boxicons (rounded, thin weight)
+const CheckCircle2 = (props: any) => <Icon icon="bx:check-circle" {...props} />
+const XCircle = (props: any) => <Icon icon="bx:x-circle" {...props} />
+const AlertCircle = (props: any) => <Icon icon="bx:error-circle" {...props} />
 
 interface SystemHealthProps {
   health: SystemHealth | null

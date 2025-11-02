@@ -1,12 +1,13 @@
 "use client"
 
-import {
-  IconDots,
-  IconFolder,
-  IconShare3,
-  IconTrash,
-  type Icon,
-} from "@tabler/icons-react"
+import { Icon as IconifyIcon } from "@iconify/react"
+
+// Icon components using Boxicons (rounded, thin weight)
+const IconDots = (props: any) => <IconifyIcon icon="bx:dots-horizontal-rounded" {...props} />
+const IconFolder = (props: any) => <IconifyIcon icon="bx:folder" {...props} />
+const IconShare3 = (props: any) => <IconifyIcon icon="bx:share-alt" {...props} />
+const IconTrash = (props: any) => <IconifyIcon icon="bx:trash" {...props} />
+type Icon = React.ComponentType<any>
 
 import {
   DropdownMenu,
@@ -31,7 +32,7 @@ export function NavDocuments({
   items: {
     name: string
     url: string
-    icon: Icon
+    icon: React.ComponentType<any>
   }[]
 }) {
   const { isMobile } = useSidebar()

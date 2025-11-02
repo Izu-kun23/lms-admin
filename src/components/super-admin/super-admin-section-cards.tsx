@@ -1,8 +1,15 @@
 "use client"
 
-import { IconTrendingUp, Building2, Users, BookOpen, Activity } from "lucide-react"
+import { Icon } from "@iconify/react"
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api"
+
+// Icon components using Boxicons (rounded, thin weight)
+const IconTrendingUp = (props: any) => <Icon icon="bx:up-arrow" {...props} />
+const Building2 = (props: any) => <Icon icon="bx:building" {...props} />
+const Users = (props: any) => <Icon icon="bx:group" {...props} />
+const BookOpen = (props: any) => <Icon icon="bx:book" {...props} />
+const Activity = (props: any) => <Icon icon="bx:activity" {...props} />
 
 import { Badge } from "@/components/ui/badge"
 import {
@@ -15,26 +22,67 @@ import {
 } from "@/components/ui/card"
 
 export function SuperAdminSectionCards() {
+  // API calls commented out - using mock data
   const { data: stats, isLoading } = useQuery({
     queryKey: ["global-stats"],
-    queryFn: () => apiClient.getGlobalStats(),
-    refetchInterval: 60000, // Refetch every minute
+    // queryFn: () => apiClient.getGlobalStats(),
+    queryFn: async () => {
+      return {
+        users: {
+          totalUsers: 25000,
+          activeUsers: 15000,
+          newUsersThisMonth: 500,
+          userGrowthRate: 12.5,
+        },
+        organizations: {
+          totalOrganizations: 15,
+          activeOrganizations: 14,
+          averageUsersPerOrg: 1667,
+        },
+        courses: {
+          totalCourses: 500,
+          activeCourses: 450,
+          averageEnrollmentsPerCourse: 45,
+        },
+        system: {
+          uptime: 99.9,
+          averageResponseTime: 150,
+        },
+      }
+    },
+    // refetchInterval: 60000, // Refetch every minute
   })
 
   const { data: health } = useQuery({
     queryKey: ["system-health"],
-    queryFn: () => apiClient.getHealth(),
-    refetchInterval: 30000, // Refetch every 30 seconds
+    // queryFn: () => apiClient.getHealth(),
+    queryFn: async () => {
+      return {
+        status: "healthy",
+        performance: {
+          uptime: 99.9,
+          responseTime: 150,
+        },
+      }
+    },
+    // refetchInterval: 30000, // Refetch every 30 seconds
   })
 
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      <Card className="@container/card">
+    <div className="grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-white lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+      <Card className="@container/card relative">
         <CardHeader>
-          <CardDescription>Organizations</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {stats?.organizations.totalOrganizations || 0}
-          </CardTitle>
+          <CardDescription>
+            Organizations
+          </CardDescription>
+          <div className="relative">
+            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+              {stats?.organizations.totalOrganizations || 0}
+            </CardTitle>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+              <Building2 className="h-6 w-6 text-blue-600" />
+            </div>
+          </div>
           <CardAction>
             <Badge variant="outline">
               <Building2 className="size-4" />
@@ -51,12 +99,19 @@ export function SuperAdminSectionCards() {
           </div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
+      <Card className="@container/card relative">
         <CardHeader>
-          <CardDescription>Total Users</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {stats?.users.totalUsers || 0}
-          </CardTitle>
+          <CardDescription>
+            Total Users
+          </CardDescription>
+          <div className="relative">
+            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+              {stats?.users.totalUsers || 0}
+            </CardTitle>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+              <Users className="h-6 w-6 text-blue-600" />
+            </div>
+          </div>
           <CardAction>
             <Badge variant="outline">
               <Users className="size-4" />
@@ -77,12 +132,19 @@ export function SuperAdminSectionCards() {
           </div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
+      <Card className="@container/card relative">
         <CardHeader>
-          <CardDescription>Total Courses</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {stats?.courses.totalCourses || 0}
-          </CardTitle>
+          <CardDescription>
+            Total Courses
+          </CardDescription>
+          <div className="relative">
+            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+              {stats?.courses.totalCourses || 0}
+            </CardTitle>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+              <BookOpen className="h-6 w-6 text-blue-600" />
+            </div>
+          </div>
           <CardAction>
             <Badge variant="outline">
               <BookOpen className="size-4" />
@@ -99,12 +161,19 @@ export function SuperAdminSectionCards() {
           </div>
         </CardFooter>
       </Card>
-      <Card className="@container/card">
+      <Card className="@container/card relative">
         <CardHeader>
-          <CardDescription>System Uptime</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {health?.performance.uptime || stats?.system.uptime || 0}%
-          </CardTitle>
+          <CardDescription>
+            System Uptime
+          </CardDescription>
+          <div className="relative">
+            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+              {health?.performance.uptime || stats?.system.uptime || 0}%
+            </CardTitle>
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+              <Activity className="h-6 w-6 text-blue-600" />
+            </div>
+          </div>
           <CardAction>
             <Badge variant="outline">
               <Activity className="size-4" />

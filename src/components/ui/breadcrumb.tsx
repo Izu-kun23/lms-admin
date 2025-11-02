@@ -1,6 +1,8 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
-import { ChevronRight, MoreHorizontal } from "lucide-react"
+import { Icon } from "@iconify/react"
+const ChevronRight = (props: any) => <Icon icon="bx:chevron-right" {...props} />
+const MoreHorizontal = (props: any) => <Icon icon="bx:dots-horizontal-rounded" {...props} />
 
 import { cn } from "@/lib/utils"
 

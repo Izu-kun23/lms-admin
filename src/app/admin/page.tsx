@@ -5,6 +5,7 @@ import { AdminSectionCards } from "@/components/admin/admin-section-cards"
 import { AdminChart } from "@/components/admin/admin-chart"
 import { AdminDataTable } from "@/components/admin/admin-data-table"
 import { AdminHeader } from "@/components/admin/admin-header"
+import { RecentCourses } from "@/components/admin/recent-courses"
 import {
   SidebarInset,
   SidebarProvider,
@@ -27,6 +28,7 @@ export default function AdminDashboardPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 px-4 py-4 md:gap-6 md:px-6 md:py-6">
               <AdminSectionCards />
+              <RecentCourses />
               <AdminChart />
               <AdminDataTable viewType="users" />
             </div>

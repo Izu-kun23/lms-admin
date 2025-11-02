@@ -18,19 +18,74 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Activity, Server, Database, HardDrive, Cpu, Wifi } from "lucide-react"
+import { Icon } from "@iconify/react"
+const Activity = (props: any) => <Icon icon="bx:activity" {...props} />
+const Server = (props: any) => <Icon icon="bx:server" {...props} />
+const Database = (props: any) => <Icon icon="bx:data" {...props} />
+const HardDrive = (props: any) => <Icon icon="bx:hdd" {...props} />
+const Cpu = (props: any) => <Icon icon="bx:chip" {...props} />
+const Wifi = (props: any) => <Icon icon="bx:wifi" {...props} />
 
 export default function SuperAdminMonitoringPage() {
+  // API calls commented out - using mock data
   const { data: globalHealth, isLoading: healthLoading } = useQuery({
     queryKey: ["global-health"],
-    queryFn: () => apiClient.getGlobalHealth(),
-    refetchInterval: 30000, // Refetch every 30 seconds
+    // queryFn: () => apiClient.getGlobalHealth(),
+    queryFn: async () => {
+      return {
+        status: "healthy",
+        timestamp: new Date().toISOString(),
+        services: {
+          api: "healthy",
+          database: "healthy",
+          websocket: "healthy",
+          storage: "healthy",
+        },
+        performance: {
+          uptime: 99.9,
+          responseTime: 150,
+          throughput: 1000,
+          errorRate: 0.1,
+        },
+        resources: {
+          cpu: "45%",
+          memory: "60%",
+          storage: "75%",
+          network: "30%",
+        },
+      }
+    },
+    // refetchInterval: 30000, // Refetch every 30 seconds
   })
 
   const { data: health, isLoading: localHealthLoading } = useQuery({
     queryKey: ["system-health"],
-    queryFn: () => apiClient.getHealth(),
-    refetchInterval: 30000,
+    // queryFn: () => apiClient.getHealth(),
+    queryFn: async () => {
+      return {
+        status: "healthy",
+        timestamp: new Date().toISOString(),
+        performance: {
+          uptime: 99.9,
+          responseTime: 150,
+          throughput: 1000,
+          errorRate: 0.1,
+        },
+        resources: {
+          cpu: "45%",
+          memory: "60%",
+          storage: "75%",
+          network: "30%",
+        },
+        services: {
+          api: "healthy",
+          database: "healthy",
+          websocket: "healthy",
+          storage: "healthy",
+        },
+      }
+    },
+    // refetchInterval: 30000,
   })
 
   const isLoading = healthLoading || localHealthLoading

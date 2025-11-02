@@ -19,18 +19,63 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { BarChart3, Activity, Building2, Users, BookOpen } from "lucide-react"
+import { Icon } from "@iconify/react"
+const BarChart3 = (props: any) => <Icon icon="bx:bar-chart-alt-2" {...props} />
+const Activity = (props: any) => <Icon icon="bx:activity" {...props} />
+const Building2 = (props: any) => <Icon icon="bx:building" {...props} />
+const Users = (props: any) => <Icon icon="bx:group" {...props} />
+const BookOpen = (props: any) => <Icon icon="bx:book" {...props} />
 
 export default function SuperAdminAnalyticsPage() {
+  // API calls commented out - using mock data
   const { data: globalStats, isLoading: statsLoading } = useQuery({
     queryKey: ["global-stats"],
-    queryFn: () => apiClient.getGlobalStats(),
-    refetchInterval: 60000,
+    // queryFn: () => apiClient.getGlobalStats(),
+    queryFn: async () => {
+      return {
+        users: {
+          totalUsers: 25000,
+          activeUsers: 15000,
+          newUsersThisMonth: 500,
+          userGrowthRate: 12.5,
+        },
+        organizations: {
+          totalOrganizations: 15,
+          activeOrganizations: 14,
+          averageUsersPerOrg: 1667,
+        },
+        courses: {
+          totalCourses: 500,
+          activeCourses: 450,
+          averageEnrollmentsPerCourse: 45,
+        },
+        system: {
+          uptime: 99.9,
+          averageResponseTime: 150,
+          errorRate: 0.1,
+          storageUsage: "2.5TB",
+        },
+      }
+    },
+    // refetchInterval: 60000,
   })
 
   const { data: organizations, isLoading: orgsLoading } = useQuery({
     queryKey: ["organizations"],
-    queryFn: () => apiClient.getOrganizations(),
+    // queryFn: () => apiClient.getOrganizations(),
+    queryFn: async () => {
+      return [
+        {
+          id: "org1",
+          name: "University 1",
+          slug: "university-1",
+          domain: "university1.edu",
+          isActive: true,
+          createdAt: "2024-01-20T10:00:00Z",
+          updatedAt: "2024-01-20T10:00:00Z",
+        },
+      ]
+    },
   })
 
   const isLoading = statsLoading || orgsLoading

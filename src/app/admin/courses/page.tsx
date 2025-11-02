@@ -9,47 +9,46 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { EnhancedTable } from "@/components/ui/enhanced-table"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { BookOpen, Search, Users } from "lucide-react"
+import { Icon } from "@iconify/react"
+const BookOpen = (props: any) => <Icon icon="bx:book" {...props} />
+const Search = (props: any) => <Icon icon="bx:search" {...props} />
+const Users = (props: any) => <Icon icon="bx:group" {...props} />
 
 export default function AdminCoursesPage() {
-  const [searchQuery, setSearchQuery] = React.useState("")
 
+  // API call commented out - using mock data
   const { data: courses, isLoading } = useQuery({
     queryKey: ["admin-courses"],
-    queryFn: () => apiClient.getCourses(),
+    // queryFn: () => apiClient.getCourses(),
+    queryFn: async () => {
+      return [
+        {
+          id: "course1",
+          title: "Introduction to Computer Science",
+          code: "CS101",
+          summary: "Fundamentals of programming",
+          instructorId: "instructor1",
+          instructor: { firstName: "Dr. Jane", lastName: "Smith" },
+          enrollments: [{ id: "enroll1" }, { id: "enroll2" }],
+          createdAt: "2024-01-20T10:00:00Z",
+        },
+        {
+          id: "course2",
+          title: "Advanced Programming",
+          code: "CS201",
+          summary: "Advanced programming concepts",
+          instructorId: "instructor2",
+          instructor: { firstName: "Dr. John", lastName: "Doe" },
+          enrollments: [{ id: "enroll3" }],
+          createdAt: "2024-01-15T10:00:00Z",
+        },
+      ]
+    },
   })
-
-  const filteredCourses = React.useMemo(() => {
-    if (!courses) return []
-    if (!searchQuery) return courses
-
-    const query = searchQuery.toLowerCase()
-    return courses.filter(
-      (course: any) =>
-        course.title.toLowerCase().includes(query) ||
-        course.code?.toLowerCase().includes(query) ||
-        course.summary?.toLowerCase().includes(query) ||
-        course.instructor?.firstName?.toLowerCase().includes(query) ||
-        course.instructor?.lastName?.toLowerCase().includes(query)
-    )
-  }, [courses, searchQuery])
 
   const getInstructorName = (course: any) => {
     if (course.instructor) {
@@ -59,6 +58,45 @@ export default function AdminCoursesPage() {
     }
     return course.instructorId || "N/A"
   }
+
+  // Column definitions for EnhancedTable
+  const columns: ColumnDef<any>[] = React.useMemo(() => [
+    {
+      accessorKey: "title",
+      header: "Title",
+      cell: ({ row }) => <span className="font-medium">{row.original.title}</span>,
+    },
+    {
+      accessorKey: "code",
+      header: "Code",
+      cell: ({ row }) => (
+        <Badge variant="outline">{row.original.code || "N/A"}</Badge>
+      ),
+    },
+    {
+      accessorKey: "instructor",
+      header: "Instructor",
+      cell: ({ row }) => getInstructorName(row.original),
+    },
+    {
+      accessorKey: "enrollments",
+      header: "Enrollments",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <Users className="h-4 w-4 text-muted-foreground" />
+          {row.original.enrollments?.length || 0}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created",
+      cell: ({ row }) =>
+        row.original.createdAt
+          ? new Date(row.original.createdAt).toLocaleDateString()
+          : "N/A",
+    },
+  ], [])
 
   return (
     <SidebarProvider
@@ -82,77 +120,21 @@ export default function AdminCoursesPage() {
                 </p>
               </div>
 
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <BookOpen className="h-5 w-5" />
-                        Courses
-                      </CardTitle>
-                      <CardDescription>
-                        All courses in your organization
-                      </CardDescription>
-                    </div>
-                    <div className="relative w-64">
-                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search courses..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-8"
-                      />
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      Loading courses...
-                    </div>
-                  ) : filteredCourses.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      {searchQuery
-                        ? "No courses found matching your search"
-                        : "No courses found"}
-                    </div>
-                  ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Title</TableHead>
-                          <TableHead>Code</TableHead>
-                          <TableHead>Instructor</TableHead>
-                          <TableHead>Enrollments</TableHead>
-                          <TableHead>Created</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredCourses.map((course: any) => (
-                          <TableRow key={course.id}>
-                            <TableCell className="font-medium">{course.title}</TableCell>
-                            <TableCell>
-                              <Badge variant="outline">{course.code || "N/A"}</Badge>
-                            </TableCell>
-                            <TableCell>{getInstructorName(course)}</TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Users className="h-4 w-4 text-muted-foreground" />
-                                {course.enrollments?.length || 0}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              {course.createdAt
-                                ? new Date(course.createdAt).toLocaleDateString()
-                                : "N/A"}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </CardContent>
-              </Card>
+              {isLoading ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Loading courses...
+                </div>
+              ) : (
+                <EnhancedTable
+                  data={courses || []}
+                  columns={columns}
+                  title="Courses"
+                  searchPlaceholder="Search courses..."
+                  itemLabel="course"
+                  defaultPageSize={8}
+                  getRowId={(row) => row.id}
+                />
+              )}
             </div>
           </div>
         </div>

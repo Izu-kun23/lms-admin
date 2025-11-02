@@ -1,23 +1,24 @@
 "use client"
 
 import * as React from "react"
-import {
-  IconCamera,
-  IconChartBar,
-  IconDashboard,
-  IconDatabase,
-  IconFileAi,
-  IconFileDescription,
-  IconFileWord,
-  IconFolder,
-  IconHelp,
-  IconInnerShadowTop,
-  IconListDetails,
-  IconReport,
-  IconSearch,
-  IconSettings,
-  IconUsers,
-} from "@tabler/icons-react"
+import { Icon } from "@iconify/react"
+
+// Icon components using Boxicons (rounded, thin weight)
+const IconCamera = (props: any) => <Icon icon="bx:camera" {...props} />
+const IconChartBar = (props: any) => <Icon icon="bx:bar-chart-alt-2" {...props} />
+const IconDashboard = (props: any) => <Icon icon="bx:grid-alt" {...props} />
+const IconDatabase = (props: any) => <Icon icon="bx:data" {...props} />
+const IconFileAi = (props: any) => <Icon icon="bx:file" {...props} />
+const IconFileDescription = (props: any) => <Icon icon="bx:file" {...props} />
+const IconFileWord = (props: any) => <Icon icon="bx:file" {...props} />
+const IconFolder = (props: any) => <Icon icon="bx:folder" {...props} />
+const IconHelp = (props: any) => <Icon icon="bx:help-circle" {...props} />
+const IconInnerShadowTop = (props: any) => <Icon icon="bx:circle" {...props} />
+const IconListDetails = (props: any) => <Icon icon="bx:list-ul" {...props} />
+const IconReport = (props: any) => <Icon icon="bx:file" {...props} />
+const IconSearch = (props: any) => <Icon icon="bx:search" {...props} />
+const IconSettings = (props: any) => <Icon icon="bx:cog" {...props} />
+const IconUsers = (props: any) => <Icon icon="bx:group" {...props} />
 
 import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"

@@ -1,12 +1,13 @@
 "use client"
 
-import {
-  IconCreditCard,
-  IconDotsVertical,
-  IconLogout,
-  IconNotification,
-  IconUserCircle,
-} from "@tabler/icons-react"
+import { Icon } from "@iconify/react"
+
+// Icon components using Boxicons (rounded, thin weight)
+const IconCreditCard = (props: any) => <Icon icon="bx:credit-card" width="16" height="16" {...props} />
+const IconDotsVertical = (props: any) => <Icon icon="bx:dots-vertical-rounded" width="16" height="16" {...props} />
+const IconLogout = (props: any) => <Icon icon="bx:log-out" width="16" height="16" {...props} />
+const IconNotification = (props: any) => <Icon icon="bx:bell" width="16" height="16" {...props} />
+const IconUserCircle = (props: any) => <Icon icon="bx:user-circle" width="16" height="16" {...props} />
 
 import {
   Avatar,

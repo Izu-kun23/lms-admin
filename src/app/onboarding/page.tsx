@@ -11,8 +11,22 @@ export default function OnboardingPage() {
   const router = useRouter()
 
   const createMutation = useMutation({
-    mutationFn: (data: CreateOrganizationRequest) => apiClient.createOrganization(data),
-    onSuccess: (data) => {
+    mutationFn: async (data: CreateOrganizationRequest) => {
+      // API call commented out - simulating success
+      // return apiClient.createOrganization(data)
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            id: `org-${Date.now()}`,
+            ...data,
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          })
+        }, 500)
+      })
+    },
+    onSuccess: (data: any) => {
       // Update organizations in localStorage
       const existingOrgs = JSON.parse(localStorage.getItem("organizations") || "[]")
       existingOrgs.push(data)

@@ -6,16 +6,15 @@ import { useParams, useRouter } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { apiClient } from "@/lib/api"
 import { Button } from "@/components/ui/button"
-import {
-  Building2,
-  Globe,
-  Users,
-  Calendar,
-  Pencil,
-  Trash2,
-  CheckCircle2,
-  XCircle,
-} from "lucide-react"
+import { Icon } from "@iconify/react"
+const Building2 = (props: any) => <Icon icon="bx:building" {...props} />
+const Globe = (props: any) => <Icon icon="bx:globe" {...props} />
+const Users = (props: any) => <Icon icon="bx:group" {...props} />
+const Calendar = (props: any) => <Icon icon="bx:calendar" {...props} />
+const Pencil = (props: any) => <Icon icon="bx:edit" {...props} />
+const Trash2 = (props: any) => <Icon icon="bx:trash" {...props} />
+const CheckCircle2 = (props: any) => <Icon icon="bx:check-circle" {...props} />
+const XCircle = (props: any) => <Icon icon="bx:x-circle" {...props} />
 
 export default function OrganizationDetailsPage() {
   const params = useParams()
@@ -23,15 +22,42 @@ export default function OrganizationDetailsPage() {
   const queryClient = useQueryClient()
   const orgId = params.id as string
 
+  // API call commented out - using mock data
   const { data: organization, isLoading } = useQuery({
     queryKey: ["organization", orgId],
-    queryFn: () => apiClient.getOrganization(orgId),
+    // queryFn: () => apiClient.getOrganization(orgId),
+    queryFn: async () => {
+      return {
+        id: orgId,
+        name: "University of Technology",
+        slug: "university-of-tech",
+        domain: "university.edu",
+        description: "A leading technology university",
+        settings: {
+          maxUsers: 10000,
+          features: {
+            messaging: true,
+            notifications: true,
+            analytics: true,
+          },
+        },
+        isActive: true,
+        createdAt: "2024-01-20T10:00:00Z",
+        updatedAt: "2024-01-20T10:00:00Z",
+      }
+    },
   })
 
   const deleteMutation = useMutation({
-    mutationFn: () => apiClient.deleteOrganization(orgId),
+    mutationFn: async () => {
+      // API call commented out - simulating success
+      // return apiClient.deleteOrganization(orgId)
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(undefined), 500)
+      })
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["organizations"] })
+      // queryClient.invalidateQueries({ queryKey: ["organizations"] })
       router.push("/super-admin/organizations")
     },
   })

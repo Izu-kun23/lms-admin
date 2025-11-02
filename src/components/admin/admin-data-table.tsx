@@ -19,26 +19,125 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Users, BookOpen } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Icon } from "@iconify/react"
+import { useRouter } from "next/navigation"
+const Users = (props: any) => <Icon icon="bx:group" {...props} />
+const BookOpen = (props: any) => <Icon icon="bx:book" {...props} />
+const ArrowRight = (props: any) => <Icon icon="bx:chevron-right" {...props} />
+const Clock = (props: any) => <Icon icon="bx:time" {...props} />
 
 interface AdminDataTableProps {
   viewType?: "users" | "courses"
 }
 
 export function AdminDataTable({ viewType = "users" }: AdminDataTableProps) {
+  const router = useRouter()
+  
+  // API calls commented out - using mock data
   const { data: users, isLoading: usersLoading } = useQuery({
     queryKey: ["admin-users"],
-    queryFn: () => apiClient.getAllUsers(),
+    // queryFn: () => apiClient.getAllUsers(),
+    queryFn: async () => {
+      return [
+        {
+          id: "user1",
+          firstName: "John",
+          lastName: "Doe",
+          email: "john@example.com",
+          role: "STUDENT",
+          totalCourses: 3,
+          lastActiveAt: "2024-01-20T10:00:00Z",
+        },
+        {
+          id: "user2",
+          firstName: "Jane",
+          lastName: "Smith",
+          email: "jane@example.com",
+          role: "INSTRUCTOR",
+          totalCourses: 5,
+          lastActiveAt: "2024-01-19T14:30:00Z",
+        },
+        {
+          id: "user3",
+          firstName: "Michael",
+          lastName: "Johnson",
+          email: "michael@example.com",
+          role: "STUDENT",
+          totalCourses: 2,
+          lastActiveAt: "2024-01-18T09:15:00Z",
+        },
+        {
+          id: "user4",
+          firstName: "Sarah",
+          lastName: "Williams",
+          email: "sarah@example.com",
+          role: "ADMIN",
+          totalCourses: 0,
+          lastActiveAt: "2024-01-17T16:45:00Z",
+        },
+        {
+          id: "user5",
+          firstName: "David",
+          lastName: "Brown",
+          email: "david@example.com",
+          role: "STUDENT",
+          totalCourses: 4,
+          lastActiveAt: "2024-01-16T11:20:00Z",
+        },
+      ]
+    },
     enabled: viewType === "users",
   })
 
   const { data: courses, isLoading: coursesLoading } = useQuery({
     queryKey: ["admin-courses"],
-    queryFn: () => apiClient.getCourses(),
+    // queryFn: () => apiClient.getCourses(),
+    queryFn: async () => {
+      return [
+        {
+          id: "course1",
+          title: "Introduction to CS",
+          code: "CS101",
+          instructor: { firstName: "Dr. Jane", lastName: "Smith" },
+          enrollments: [{ id: "enroll1" }],
+          createdAt: "2024-01-20T10:00:00Z",
+        },
+      ]
+    },
     enabled: viewType === "courses",
   })
 
   const isLoading = viewType === "users" ? usersLoading : coursesLoading
+
+  const roleColors: Record<string, string> = {
+    STUDENT: "default",
+    INSTRUCTOR: "secondary",
+    ADMIN: "destructive",
+    SUPER_ADMIN: "outline",
+  }
+
+  const formatRelativeTime = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+    
+    if (diffDays === 0) {
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+      if (diffHours === 0) {
+        const diffMinutes = Math.floor(diffMs / (1000 * 60))
+        return diffMinutes <= 1 ? "Just now" : `${diffMinutes} minutes ago`
+      }
+      return `${diffHours} ${diffHours === 1 ? "hour" : "hours"} ago`
+    } else if (diffDays === 1) {
+      return "Yesterday"
+    } else if (diffDays < 7) {
+      return `${diffDays} days ago`
+    } else {
+      return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    }
+  }
 
   if (isLoading) {
     return (
@@ -56,56 +155,84 @@ export function AdminDataTable({ viewType = "users" }: AdminDataTableProps) {
   }
 
   if (viewType === "users") {
-    const recentUsers = Array.isArray(users) ? users.slice(0, 10) : []
+    const recentUsers = Array.isArray(users) ? users.slice(0, 5) : []
     
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Recent Users
-          </CardTitle>
-          <CardDescription>Latest user activity in your organization</CardDescription>
+      <Card className="border-border">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Users className="h-5 w-5 text-primary" />
+                Recent Users
+              </CardTitle>
+              <CardDescription className="mt-1">
+                Latest user activity in your organization
+              </CardDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push("/admin/users")}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              View all
+              <ArrowRight className="h-3 w-3 ml-1" />
+            </Button>
+          </div>
         </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Courses</TableHead>
-                <TableHead>Last Active</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentUsers.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
-                    No users found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                recentUsers.map((user: any) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">
-                      {user.firstName} {user.lastName}
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{user.role}</Badge>
-                    </TableCell>
-                    <TableCell>{user.totalCourses || 0}</TableCell>
-                    <TableCell>
-                      {user.lastActiveAt
-                        ? new Date(user.lastActiveAt).toLocaleDateString()
-                        : "Never"}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+        <CardContent className="pt-0">
+          {recentUsers.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No users found
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {recentUsers.map((user: any, index: number) => (
+                <div
+                  key={user.id}
+                  className={`flex items-center gap-4 px-3 py-3 rounded-lg transition-colors hover:bg-muted/30 ${
+                    index < recentUsers.length - 1 ? "border-b border-border" : ""
+                  }`}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-sm truncate">
+                            {user.firstName} {user.lastName}
+                          </p>
+                          <Badge
+                            variant={roleColors[user.role] as any || "outline"}
+                            className="text-xs px-1.5 py-0 h-5"
+                          >
+                            {user.role}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate mt-0.5">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-6 text-sm">
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <BookOpen className="h-3.5 w-3.5" />
+                      <span className="text-xs font-medium">{user.totalCourses || 0}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-muted-foreground w-24">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span className="text-xs">
+                        {user.lastActiveAt
+                          ? formatRelativeTime(user.lastActiveAt)
+                          : "Never"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     )

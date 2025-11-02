@@ -1,61 +1,77 @@
 "use client"
 
-import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
+import { Icon } from "@iconify/react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 
-import { Button } from "@/components/ui/button"
 import {
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
+type NavItem = {
+  title: string
+  url: string
+  icon?: React.ComponentType<any>
+}
+
+type NavSection = {
+  label?: string
+  items: NavItem[]
+}
+
+type NavMainProps = {
+  items?: NavItem[]
+  sections?: NavSection[]
+}
+
 export function NavMain({
   items,
-}: {
-  items: {
-    title: string
-    url: string
-    icon?: Icon
-  }[]
-}) {
+  sections,
+}: NavMainProps) {
+  const pathname = usePathname()
+  // Support both old format (items) and new format (sections)
+  const navSections: NavSection[] = sections || (items ? [{ items }] : [])
+
   return (
-    <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2">
-            <SidebarMenuButton
-              tooltip="Quick Create"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
-            >
-              <IconCirclePlusFilled />
-              <span>Quick Create</span>
-            </SidebarMenuButton>
-            <Button
-              size="icon"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-              variant="outline"
-            >
-              <IconMail />
-              <span className="sr-only">Inbox</span>
-            </Button>
-          </SidebarMenuItem>
-        </SidebarMenu>
-        <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title} asChild>
-                <Link href={item.url}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+    <>
+      {navSections.map((section, sectionIndex) => (
+        <SidebarGroup key={sectionIndex} className="py-1">
+          {section.label && (
+            <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+          )}
+          <SidebarGroupContent className="flex flex-col gap-0.5">
+            <SidebarMenu>
+              {section.items.map((item) => {
+                // Check if current path matches the item URL exactly or is a child route
+                const isActive = pathname === item.url || 
+                  (item.url !== "/admin" && 
+                   item.url !== "/super-admin" && 
+                   pathname?.startsWith(item.url + "/"))
+                
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      tooltip={item.title} 
+                      asChild
+                      isActive={isActive}
+                    >
+                      <Link href={item.url}>
+                        {item.icon && <item.icon />}
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      ))}
+    </>
   )
 }

@@ -19,22 +19,50 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Building2, Users } from "lucide-react"
+import { Icon } from "@iconify/react"
+const Building2 = (props: any) => <Icon icon="bx:building" {...props} />
+const Users = (props: any) => <Icon icon="bx:group" {...props} />
 
 interface SuperAdminDataTableProps {
   viewType?: "organizations" | "users"
 }
 
 export function SuperAdminDataTable({ viewType = "organizations" }: SuperAdminDataTableProps) {
+  // API calls commented out - using mock data
   const { data: organizations, isLoading: orgsLoading } = useQuery({
     queryKey: ["organizations"],
-    queryFn: () => apiClient.getOrganizations(),
+    // queryFn: () => apiClient.getOrganizations(),
+    queryFn: async () => {
+      return [
+        {
+          id: "org1",
+          name: "University 1",
+          slug: "university-1",
+          domain: "university1.edu",
+          isActive: true,
+          createdAt: "2024-01-20T10:00:00Z",
+        },
+      ]
+    },
     enabled: viewType === "organizations",
   })
 
   const { data: users, isLoading: usersLoading } = useQuery({
     queryKey: ["admin-users-all"],
-    queryFn: () => apiClient.getAllUsers("all"),
+    // queryFn: () => apiClient.getAllUsers("all"),
+    queryFn: async () => {
+      return [
+        {
+          id: "user1",
+          firstName: "John",
+          lastName: "Doe",
+          email: "john@example.com",
+          role: "STUDENT",
+          organization: { id: "org1", name: "University 1" },
+          lastActiveAt: "2024-01-20T10:00:00Z",
+        },
+      ]
+    },
     enabled: viewType === "users",
   })
 

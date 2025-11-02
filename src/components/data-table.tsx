@@ -20,20 +20,21 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import {
-  IconChevronDown,
-  IconChevronLeft,
-  IconChevronRight,
-  IconChevronsLeft,
-  IconChevronsRight,
-  IconCircleCheckFilled,
-  IconDotsVertical,
-  IconGripVertical,
-  IconLayoutColumns,
-  IconLoader,
-  IconPlus,
-  IconTrendingUp,
-} from "@tabler/icons-react"
+import { Icon } from "@iconify/react"
+
+// Icon components using Boxicons (rounded, thin weight)
+const IconChevronDown = (props: any) => <Icon icon="bx:chevron-down" {...props} />
+const IconChevronLeft = (props: any) => <Icon icon="bx:chevron-left" {...props} />
+const IconChevronRight = (props: any) => <Icon icon="bx:chevron-right" {...props} />
+const IconChevronsLeft = (props: any) => <Icon icon="bx:chevrons-left" {...props} />
+const IconChevronsRight = (props: any) => <Icon icon="bx:chevrons-right" {...props} />
+const IconCircleCheckFilled = (props: any) => <Icon icon="bx:check-circle" {...props} />
+const IconDotsVertical = (props: any) => <Icon icon="bx:dots-vertical-rounded" {...props} />
+const IconGripVertical = (props: any) => <Icon icon="bx:move-vertical" {...props} />
+const IconLayoutColumns = (props: any) => <Icon icon="bx:columns" {...props} />
+const IconLoader = (props: any) => <Icon icon="bx:loader-circle" {...props} />
+const IconPlus = (props: any) => <Icon icon="bx:plus" {...props} />
+const IconTrendingUp = (props: any) => <Icon icon="bx:up-arrow" {...props} />
 import {
   ColumnDef,
   ColumnFiltersState,

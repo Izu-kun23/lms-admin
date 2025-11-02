@@ -9,48 +9,56 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { EnhancedTable } from "@/components/ui/enhanced-table"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Users, Search, Building2 } from "lucide-react"
+import { Icon } from "@iconify/react"
+const Users = (props: any) => <Icon icon="bx:group" {...props} />
+const Search = (props: any) => <Icon icon="bx:search" {...props} />
+const Building2 = (props: any) => <Icon icon="bx:building" {...props} />
 
 export default function SuperAdminUsersPage() {
-  const [searchQuery, setSearchQuery] = React.useState("")
 
+  // API call commented out - using mock data
   const { data: users, isLoading } = useQuery({
     queryKey: ["super-admin-users"],
-    queryFn: () => apiClient.getAllUsers("all"),
+    // queryFn: () => apiClient.getAllUsers("all"),
+    queryFn: async () => {
+      return [
+        {
+          id: "user1",
+          email: "student@university1.edu",
+          firstName: "John",
+          lastName: "Doe",
+          role: "STUDENT",
+          organization: {
+            id: "org123",
+            name: "University 1",
+            slug: "university-1",
+          },
+          lastActiveAt: "2024-01-20T14:30:00Z",
+          totalCourses: 3,
+          completedCourses: 1,
+        },
+        {
+          id: "user2",
+          email: "instructor@university2.edu",
+          firstName: "Jane",
+          lastName: "Smith",
+          role: "INSTRUCTOR",
+          organization: {
+            id: "org456",
+            name: "University 2",
+            slug: "university-2",
+          },
+          lastActiveAt: "2024-01-20T15:00:00Z",
+          totalCourses: 5,
+          completedCourses: 0,
+        },
+      ]
+    },
   })
-
-  const filteredUsers = React.useMemo(() => {
-    if (!users) return []
-    if (!searchQuery) return users
-
-    const query = searchQuery.toLowerCase()
-    return users.filter(
-      (user: any) =>
-        user.email.toLowerCase().includes(query) ||
-        user.firstName?.toLowerCase().includes(query) ||
-        user.lastName?.toLowerCase().includes(query) ||
-        user.role.toLowerCase().includes(query) ||
-        user.organization?.name?.toLowerCase().includes(query) ||
-        user.organization?.slug?.toLowerCase().includes(query)
-    )
-  }, [users, searchQuery])
 
   const roleColors: Record<string, string> = {
     STUDENT: "default",
@@ -58,6 +66,55 @@ export default function SuperAdminUsersPage() {
     ADMIN: "destructive",
     SUPER_ADMIN: "outline",
   }
+
+  // Column definitions for EnhancedTable
+  const columns: ColumnDef<any>[] = React.useMemo(() => [
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => (
+        <span className="font-medium">
+          {row.original.firstName} {row.original.lastName}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+    },
+    {
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) => (
+        <Badge variant={roleColors[row.original.role] as any || "outline"}>
+          {row.original.role}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: "organization",
+      header: "Organization",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <Building2 className="h-4 w-4 text-muted-foreground" />
+          {row.original.organization?.name || row.original.organizationId || "N/A"}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "totalCourses",
+      header: "Courses",
+      cell: ({ row }) => row.original.totalCourses || 0,
+    },
+    {
+      accessorKey: "lastActiveAt",
+      header: "Last Active",
+      cell: ({ row }) =>
+        row.original.lastActiveAt
+          ? new Date(row.original.lastActiveAt).toLocaleDateString()
+          : "Never",
+    },
+  ], [roleColors])
 
   return (
     <SidebarProvider
@@ -83,83 +140,21 @@ export default function SuperAdminUsersPage() {
                 </p>
               </div>
 
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <Users className="h-5 w-5" />
-                        All Users
-                      </CardTitle>
-                      <CardDescription>
-                        Users across all organizations in the platform
-                      </CardDescription>
-                    </div>
-                    <div className="relative w-64">
-                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search users..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-8"
-                      />
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      Loading users...
-                    </div>
-                  ) : filteredUsers.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      {searchQuery
-                        ? "No users found matching your search"
-                        : "No users found"}
-                    </div>
-                  ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Role</TableHead>
-                          <TableHead>Organization</TableHead>
-                          <TableHead>Courses</TableHead>
-                          <TableHead>Last Active</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredUsers.map((user: any) => (
-                          <TableRow key={user.id}>
-                            <TableCell className="font-medium">
-                              {user.firstName} {user.lastName}
-                            </TableCell>
-                            <TableCell>{user.email}</TableCell>
-                            <TableCell>
-                              <Badge variant={roleColors[user.role] as any || "outline"}>
-                                {user.role}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Building2 className="h-4 w-4 text-muted-foreground" />
-                                {user.organization?.name || user.organizationId || "N/A"}
-                              </div>
-                            </TableCell>
-                            <TableCell>{user.totalCourses || 0}</TableCell>
-                            <TableCell>
-                              {user.lastActiveAt
-                                ? new Date(user.lastActiveAt).toLocaleDateString()
-                                : "Never"}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </CardContent>
-              </Card>
+              {isLoading ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Loading users...
+                </div>
+              ) : (
+                <EnhancedTable
+                  data={users || []}
+                  columns={columns}
+                  title="All Users"
+                  searchPlaceholder="Search users..."
+                  itemLabel="user"
+                  defaultPageSize={8}
+                  getRowId={(row) => row.id}
+                />
+              )}
             </div>
           </div>
         </div>
