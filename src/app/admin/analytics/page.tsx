@@ -125,9 +125,9 @@ export default function AdminAnalyticsPage() {
   const averageMetrics = React.useMemo(() => {
     if (!userStats || userStats.length === 0) {
       return {
-        averageCourses: 0,
-        averageCompletionRate: 0,
-        averageQuizScore: 0,
+        averageCourses: "0",
+        averageCompletionRate: "0",
+        averageQuizScore: "0",
       }
     }
 
@@ -148,10 +148,10 @@ export default function AdminAnalyticsPage() {
       averageCourses: (totalCourses / userStats.length).toFixed(1),
       averageCompletionRate: totalCourses > 0
         ? ((totalCompleted / totalCourses) * 100).toFixed(1)
-        : 0,
+        : "0",
       averageQuizScore: usersWithQuizScores > 0
         ? (totalQuizScores / usersWithQuizScores).toFixed(1)
-        : 0,
+        : "0",
     }
   }, [userStats])
 
@@ -217,7 +217,7 @@ export default function AdminAnalyticsPage() {
                             </div>
                           </div>
                         </div>
-                        {averageMetrics.averageQuizScore > 0 && (
+                        {Number(averageMetrics.averageQuizScore) > 0 && (
                           <div>
                             <div className="text-sm text-muted-foreground">
                               Average Quiz Score
