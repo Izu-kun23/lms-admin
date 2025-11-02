@@ -6,6 +6,7 @@ import { apiClient } from "@/lib/api"
 import { SuperAdminSidebarNew } from "@/components/super-admin/super-admin-sidebar"
 import { SuperAdminHeader } from "@/components/super-admin/super-admin-header"
 import { SystemHealthWidget } from "@/components/super-admin/system-health"
+import type { SystemHealth } from "@/lib/types"
 import {
   SidebarInset,
   SidebarProvider,
@@ -58,10 +59,10 @@ export default function SuperAdminMonitoringPage() {
     // refetchInterval: 30000, // Refetch every 30 seconds
   })
 
-  const { data: health, isLoading: localHealthLoading } = useQuery({
+  const { data: health, isLoading: localHealthLoading } = useQuery<SystemHealth>({
     queryKey: ["system-health"],
     // queryFn: () => apiClient.getHealth(),
-    queryFn: async () => {
+    queryFn: async (): Promise<SystemHealth> => {
       return {
         status: "healthy",
         timestamp: new Date().toISOString(),
